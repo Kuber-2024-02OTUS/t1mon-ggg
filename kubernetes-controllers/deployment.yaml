@@ -30,6 +30,8 @@ spec:
               - key: default.conf
                 path: default.conf
       terminationGracePeriodSeconds: 4
+      nodeSelector:
+        homework: "true"
       initContainers:
         - name: init-container
           image: busybox
