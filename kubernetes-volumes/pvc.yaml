@@ -2,9 +2,10 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: homework-claim
+  namespace: homework
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   storageClassName: homework-storageclass
   resources:
     requests:

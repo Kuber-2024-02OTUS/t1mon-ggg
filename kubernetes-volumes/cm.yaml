@@ -4,4 +4,6 @@ metadata:
   name: homework-volumes-cm
   namespace: homework
 data:
-  some-key: "some-value"
+  some-key1: "some-value1"
+  some-key2: "some-value2"
+  some-key3: "some-value3"

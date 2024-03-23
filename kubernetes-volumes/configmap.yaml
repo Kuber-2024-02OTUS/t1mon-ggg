@@ -8,6 +8,10 @@ data:
     server {
         listen 8000;
         server_name _;
+        location /conf/file {
+            alias /homework/conf;
+            autoindex on;
+        }
         location / {
             try_files $uri $uri/ /index.html;
             root /homework;

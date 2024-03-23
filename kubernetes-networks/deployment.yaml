@@ -53,7 +53,7 @@ spec:
           ports:
             - containerPort: 8000
           readinessProbe:
-            httpget:
+            httpGet:
               scheme: HTTP
               path: /index.html
               port: 8000
