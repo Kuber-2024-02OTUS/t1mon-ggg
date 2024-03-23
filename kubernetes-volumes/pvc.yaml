@@ -1,0 +1,11 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: homework-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: homework-storageclass
+  resources:
+    requests:
+      storage: 5Mi

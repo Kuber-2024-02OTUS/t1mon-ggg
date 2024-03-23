@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: homework-deployment
+  labels:
+    app: homework
+  namespace: homework
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      app: homework
+  template:
+    metadata:
+      labels:
+        app: homework
+    spec:
+      volumes:
+        - name: shared-volume
+          persistentVolumeClaim:
+              claimName: homework-claim
+        - name: nginx-default-config-volume
+          configMap:
+            name: nginx-default-config-homework
+            items:
+              - key: default.conf
+                path: default.conf
+        - name: nginx-custom-config-volume
+          configMap:
+            name: homework-volumes-cm
+      terminationGracePeriodSeconds: 4
+      nodeSelector:
+        homework: "true"
+      initContainers:
+        - name: init-container
+          image: busybox
+          command: ['sh', '-c', 'wget -O /init/index.html http://example.com/index.html']
+          volumeMounts:
+            - mountPath: /init
+              name: shared-volume
+      containers:
+        - name: nginx-container
+          image: nginx
+          env:
+            - name: NGINX_PORT
+              value: "8000"
+          volumeMounts:
+            - mountPath: /homework
+              name: shared-volume
+            - mountPath: /homework/conf
+              name: nginx-custom-config-volume
+            - name: nginx-default-config-volume
+              mountPath: /etc/nginx/conf.d/
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpget:
+              scheme: HTTP
+              path: /index.html
+              port: 8000
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "rm -f /homework"]
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
