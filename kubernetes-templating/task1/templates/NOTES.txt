@@ -1,0 +1,7 @@
+1. Get the application URL by accessing this URL:
+{{- if .Values.ingress.enabled }}
+{{- range $index, $host := .Values.ingress.hosts }}
+  http://{{ $host }}/
+{{- end }}
+{{- end }}
+P.S. Minikube was used for this home work. Edit the /etc/hosts file first

@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-deployment
+  labels:
+    app: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.replicas }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      volumes:
+        - name: shared-volume
+          persistentVolumeClaim:
+              claimName: {{ .Release.Name }}-claim
+        - name: nginx-default-config-volume
+          configMap:
+            name: nginx-default-config-{{ .Release.Name }}
+            items:
+              - key: default.conf
+                path: default.conf
+        - name: nginx-custom-config-volume
+          configMap:
+            name: homework-volumes-cm
+      terminationGracePeriodSeconds: 4
+      serviceAccountName: monitoring-sa
+      serviceAccount: monitoring-sa
+      nodeSelector:
+        homework: "true"
+      initContainers:
+        - name: init-container
+          image: "{{ .Values.busybox.image }}:{{ .Values.busybox.tag }}"
+          command: ['sh', '-c', 'wget -O /init/index.html http://example.com/index.html']
+          volumeMounts:
+            - mountPath: /init
+              name: shared-volume
+        - name: metrics
+          image: "{{ .Values.curl.image }}:{{ .Values.curl.tag }}"
+          command: ['sh', '-c', 'echo CiMgU2VsZWN0IG5hbWUgb2YgY2x1c3RlciB5b3Ugd2FudCB0byBpbnRlcmFjdCB3aXRoIGZyb20gYWJvdmUgb3V0cHV0OgpleHBvcnQgQ0xVU1RFUl9OQU1FPSJtaW5pa3VuZSIKCiMgUG9pbnQgdG8gdGhlIEFQSSBzZXJ2ZXIgcmVmZXJyaW5nIHRoZSBjbHVzdGVyIG5hbWUKQVBJU0VSVkVSPWh0dHBzOi8va3ViZXJuZXRlcy5kZWZhdWx0LnN2YwoKIyBHZXQgdGhlIHRva2VuIHZhbHVlClRPS0VOPSQoY2F0IC92YXIvcnVuL3NlY3JldHMva3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC90b2tlbikKCiMgRXhwbG9yZSB0aGUgQVBJIHdpdGggVE9LRU4KY3VybCAtayAtWCBHRVQgJEFQSVNFUlZFUi9tZXRyaWNzIC0taGVhZGVyICJBdXRob3JpemF0aW9uOiBCZWFyZXIgJFRPS0VOIiAtbyAvaW5pdC9tZXRyaWNzLmh0bWw= | base64 -d | sh -']
+          volumeMounts:
+            - mountPath: /init
+              name: shared-volume
+      containers:
+        - name: nginx-container
+          image: "{{ .Values.payload.image }}:{{ .Values.payload.tag }}"
+          env:
+            - name: NGINX_PORT
+              value: "8000"
+          volumeMounts:
+            - mountPath: /homework
+              name: shared-volume
+            - mountPath: /homework/conf
+              name: nginx-custom-config-volume
+            - name: nginx-default-config-volume
+              mountPath: /etc/nginx/conf.d/
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet:
+              scheme: HTTP
+              path: /index.html
+              port: 8000
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "rm -f /homework"]
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"

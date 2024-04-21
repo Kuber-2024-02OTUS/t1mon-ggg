@@ -1,0 +1,15 @@
+releases:
+  # dev
+  - name: kafka-dev
+    namespace: dev
+    version: 23.0.0
+    chart: oci://registry-1.docker.io/bitnamicharts/kafka
+    values:
+      - dev-values.yaml
+  # Prod
+  - name: kafka-prod
+    namespace: prod
+    version: 23.0.0
+    chart: oci://registry-1.docker.io/bitnamicharts/kafka
+    values:
+      - prod-values.yaml
