@@ -1,0 +1,10 @@
+nameOverride: ""
+namespaceOverride: ""
+fullnameOverride: ""
+serviceAccount:
+  create: false
+  name: ""
+kube-prometheus-stack:
+  enabled: true
+  crds:
+    enabled: true

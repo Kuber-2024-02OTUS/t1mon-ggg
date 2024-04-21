@@ -1,0 +1,11 @@
+apiVersion: v2
+name: kubernetes-monitoring
+description: A Helm chart for Kubernetes
+type: application
+dependencies:
+  - name: kube-prometheus-stack
+    repository: "https://prometheus-community.github.io/helm-charts/"
+    version: 58.2.1
+    condition: kube-prometheus-stack.enabled
+version: 0.0.1
+appVersion: "0.0.1"
