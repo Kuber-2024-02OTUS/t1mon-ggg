@@ -2,8 +2,8 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: nginx-default-config-{{ .Release.Name }}
-  namespace: {{ .Release.Namespace }}
+  name: nginx-default-config-{{ include "templating.name" . }}
+  namespace: {{ include "templating.namespace" . }}
 data:
   default.conf: |
     server {
@@ -19,8 +19,8 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-volumes-cm
-  namespace: {{ .Release.Namespace }}
+  name: "{{ include "templating.name" . }}-volumes-cm"
+  namespace: {{ include "templating.namespace" . }}
 data:
 {{- range $index, $key:= .Values.cmConfigmap  }}
   {{ $index }}: {{ $key }}
