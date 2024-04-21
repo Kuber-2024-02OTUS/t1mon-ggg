@@ -17,3 +17,21 @@ spec:
       interval: 15s
   namespaceSelector:
     any: true
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Release.Name }}-nginx-exporter-metrics
+  namespace: {{ .Release.Namespace }}
+  labels:
+    release: {{ .Release.Name }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  endpoints:
+    - path: /metrics
+      port: metrics
+      interval: 15s
+  namespaceSelector:
+    any: true

@@ -10,3 +10,6 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 8000
+    - protocol: TCP
+      port: 9113
+      targetPort: 9113
