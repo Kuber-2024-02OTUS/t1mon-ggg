@@ -1,0 +1,22 @@
+nameOverride: ""
+namespaceOverride: ""
+fullnameOverride: ""
+serviceAccount:
+  create: false
+  name: ""
+ingress-nginx:
+  enabled: true
+  namespaceOverride: "ingress"
+  controller:
+    metrics:
+      enabled: true
+kubernetes-templating:
+  enabled: true
+  namespaceOverride: homework
+  nameOverride: homework
+kube-prometheus-stack:
+  enabled: true
+  namespaceOverride: "prometheus"
+  nameOverride: "prometheus-stack"
+  crds:
+    enabled: true
