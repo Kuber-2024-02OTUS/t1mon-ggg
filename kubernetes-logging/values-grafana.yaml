@@ -5,7 +5,7 @@ datasources:
     - name: Loki
       type: loki
       access: proxy
-      url: http://loki-loki-distributed-gateway.logging.svc:3100
+      url: http://loki-loki-distributed-gateway.logging.svc
       jsonData:
         timeout: 60
         maxLines: 1000
