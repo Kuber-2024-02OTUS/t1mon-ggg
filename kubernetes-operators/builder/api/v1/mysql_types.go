@@ -28,8 +28,14 @@ type MySQLSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	// Foo is an example field of MySQL. Edit mysql_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	// Image is docker image for mysql deployment
+	Image string `json:"image,omitempty"`
+	// Database is mysql database name
+	Database string `json:"database,omitempty"`
+	// Password is root password for access database
+	Password string `json:"password,omitempty"`
+	// StorageSize is pvc size to sore mysql database files
+	StorageSize int `json:"storage_size,omitempty"`
 }
 
 // MySQLStatus defines the observed state of MySQL

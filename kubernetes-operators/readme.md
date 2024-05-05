@@ -13,14 +13,16 @@ minikube addons enable metrics-server
 ```
 
 # Выполнение домашнего задания 
-## Установка kubebuilder
+Создаем в соответствии с заданием манифесты
+## Создание оператора
+### Установка kubebuilder
 Нам потребуется установить kubebuilder. Для этого нам потребуется удовлетворить следующие зависимости:  
 > go version v1.20.0+  
 > docker version 17.03+.  
 > kubectl version v1.11.3+.  
 > Access to a Kubernetes v1.11.3+ cluster.  
 
-Установка:  
+### Установка:  
 ```bash
 curl -L -o kubebuilder "https://go.kubebuilder.io/dl/latest/$(go env GOOS)/$(go env GOARCH)"
 chmod +x kubebuilder && mv kubebuilder /usr/local/bin/
@@ -28,18 +30,23 @@ chmod +x kubebuilder && mv kubebuilder /usr/local/bin/
 kubebuilder completion bash > /etc/bash_completion.d/kubebuilder
 ```
 
-Выполнение
+### Выполнение
 ```bash
 mkdir builder
 kubebuilder init --domain otus.homework --repo otus.homework/operator
 kubebuilder create api --version v1 --kind MySQL
 ##редактируем в VSCode файл ./builder/api/v1/mysql_types.go
+##редактируем в VSCode файл ./builder/internal/controller/mysql_controller.go
 cd builder
 make manifests
 make install
 ```
+
+На выходе мы получим оператора плюс нормальную CRD (именно ее и применяем в кластер)
 # Завершение
 
 ```bash
 minikube stop
 ```
+
+PS. С оператором стоит почитать доп литературу. Было не совсем понятно

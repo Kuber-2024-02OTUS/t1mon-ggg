@@ -6,4 +6,7 @@ metadata:
     app.kubernetes.io/managed-by: kustomize
   name: mysql-sample
 spec:
-  # TODO(user): Add fields here
+  image: example-image
+  database: example-db
+  password: example-password
+  storage_size: 10
