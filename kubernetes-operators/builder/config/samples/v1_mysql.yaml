@@ -1,0 +1,12 @@
+apiVersion: otus.homework/v1
+kind: MySQL
+metadata:
+  labels:
+    app.kubernetes.io/name: builder
+    app.kubernetes.io/managed-by: kustomize
+  name: mysql-sample
+spec:
+  image: example-image
+  database: example-db
+  password: example-password
+  storage_size: 10

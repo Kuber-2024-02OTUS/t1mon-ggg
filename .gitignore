@@ -1,0 +1,7 @@
+settings.json
+.vscode
+minikube-linux-amd64
+resources.sh
+api.sh
+terraform/
+.kube/

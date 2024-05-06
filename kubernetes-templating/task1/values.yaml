@@ -1,0 +1,23 @@
+replicas: 1
+busybox:
+  image: busybox
+  tag: latest
+curl:
+  image: curlimages/curl
+  tag: latest
+payload:
+  image: nginx
+  tag: latest
+probes:
+  readiness:
+    enabled: true
+    delay: 3
+    period: 3
+ingress:
+  enabled: true
+  hosts:
+    - homework.otus
+cmConfigmap:
+  some-key1: "some-value1"
+  some-key2: "some-value2"
+  some-key3: "some-value3"
