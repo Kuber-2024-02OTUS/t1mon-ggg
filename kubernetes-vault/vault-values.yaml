@@ -1,0 +1,143 @@
+enabled: true
+
+global:
+  imageRegistry: ""
+  ## imagePullSecrets:
+  ##   - myRegistryKeySecretName
+  ##
+  imagePullSecrets: []
+  storageClass: ""
+  compatibility:
+    openshift:
+      adaptSecurityContext: auto
+
+kubeVersion: ""
+nameOverride: ""
+fullnameOverride: ""
+namespaceOverride: ""
+commonLabels: {}
+commonAnnotations: {}
+clusterDomain: cluster.local
+diagnosticMode:
+  enabled: false
+  command:
+    - sleep
+  args:
+    - infinity
+##
+server:
+  enabled: true
+  replicaCount: 1
+  ## @param server.podManagementPolicy Pod management policy
+  ## Should be initialized one by one when building the replicaset for the first time
+  ##
+  podManagementPolicy: Parallel
+  containerPorts:
+    http: 8200
+    internal: 8201
+
+  livenessProbe:
+    # As the user needs to manually unseal the server, we don't want Vault to restart
+    enabled: false
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 5
+    successThreshold: 1
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 5
+    successThreshold: 1
+  startupProbe:
+    enabled: false
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 5
+    successThreshold: 1
+  resourcesPreset: "nano"
+  ## @param server.resources Set container requests and limits for different resources like CPU or memory (essential for production workloads)
+  ## Example:
+  ## resources:
+  ##   requests:
+  ##     cpu: 2
+  ##     memory: 512Mi
+  ##   limits:
+  ##     cpu: 3
+  ##     memory: 1024Mi
+  ##
+  resources: {}
+  podSecurityContext:
+    enabled: true
+    fsGroupChangePolicy: Always
+    sysctls: []
+    supplementalGroups: []
+    fsGroup: 1001
+  containerSecurityContext:
+    enabled: true
+    seLinuxOptions: null
+    runAsUser: 1001
+    runAsGroup: 1001
+    runAsNonRoot: true
+    privileged: false
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop: ["ALL"]
+    seccompProfile:
+      type: "RuntimeDefault"
+  ## @param server.command Override default container command (useful when using custom images)
+  ##
+  command: []
+  ## @param server.args Override default container args (useful when using custom images)
+  ##
+  args: []
+  ## @param server.automountServiceAccountToken Mount Service Account token in pod
+  ##
+  automountServiceAccountToken: true
+  ## @param server.hostAliases Vault Server pods host aliases
+  ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+  ##
+  hostAliases: []
+  ## @param server.config [string] Vault server configuration (evaluated as a template)
+  ##
+    # storage "raft" {
+    #   path = "{{ .Values.server.persistence.mountPath }}"
+    # }
+  config: |
+    disable_mlock = true
+    ui = true
+    listener "tcp" {
+      tls_disable = 1
+      address = "[::]:{{ .Values.server.containerPorts.http }}"
+      cluster_address = "[::]:{{ .Values.server.containerPorts.internal }}"
+      {{- if .Values.server.metrics.enabled }}
+      # Enable unauthenticated metrics access (necessary for Prometheus Operator)
+      telemetry {
+        unauthenticated_metrics_access = "true"
+      }
+      {{- end }}
+    }
+
+    storage "consul" {
+      path = "vault"
+      address = "consul-server.consul:8500"
+    }
+
+    service_registration "kubernetes" {}
+
+
+  service:
+    general:
+      ## @param server.service.general.type Vault Server service type
+      ##
+      type: ClusterIP
+      ## @param server.service.general.ports.http Vault Server service HTTP port
+      ## @param server.service.general.ports.internal Vault Server internal port
+      ##
+      ports:
+        http: 8200
+        internal: 8201

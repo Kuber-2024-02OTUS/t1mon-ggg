@@ -5,3 +5,8 @@ resources.sh
 api.sh
 terraform/
 .kube/
+vault.zip
+consul.zip
+consul-k8s-main/
+vault-helm-main/
+vault.secret
