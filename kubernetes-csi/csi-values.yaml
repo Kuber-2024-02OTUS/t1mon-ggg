@@ -1,0 +1,6 @@
+secret:
+  accessKey: "YC access key"
+  create: true
+  endpoint: https://storage.yandexcloud.net
+  name: csi-s3-secret
+  secretKey: "YC Secret Key"

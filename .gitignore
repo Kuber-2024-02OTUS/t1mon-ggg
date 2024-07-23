@@ -10,3 +10,5 @@ consul.zip
 consul-k8s-main/
 vault-helm-main/
 vault.secret
+objectstorage.txt
+kubernetes-csi/csi-s3/
